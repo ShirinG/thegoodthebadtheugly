@@ -147,9 +147,22 @@ knitr::include_graphics(pngfile)
   p <- penguins %>%
     remove_missing() %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
-              color = species, size = body_mass_g)) +
-    geom_point(alpha = 0.5)
+              color = species, shape = species, size = body_mass_g)) +
+    geom_point(alpha = 0.5) +
+    labs(x = "Bill length (mm)", 
+         y = "Flipper length (mm)",
+        title = "Bubble plot", 
+        subtitle = "Penguins bill v. flipper length by species; size indicates body mass in grams",
+        caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "bubble.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Line chart
@@ -161,8 +174,21 @@ knitr::include_graphics(pngfile)
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
                color = species)) +
     geom_line() +
-    facet_wrap(vars(species, sex), nrow = 3)
+    facet_wrap(vars(species, sex), nrow = 3) +
+    labs(x = "Bill length (mm)", 
+         y = "Flipper length (mm)",
+        title = "Line plot", 
+        subtitle = "Penguins bill v. flipper length by species and sex",
+        caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "linechart.png")
+agg_png(pngfile, width = 60, height = 60, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Correlation plots / heatmap
@@ -180,17 +206,31 @@ cormat <- cormat %>%
   mutate(x = colnames(mat)) %>%
   gather(key = "y", value = "value", bill_depth_mm:flipper_length_mm)
 
-cormat %>%
-  remove_missing() %>%
-  arrange(x, y) %>%
-  ggplot(aes(x = x, y = y, fill = value)) + 
-  geom_tile() +
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-   midpoint = 0, limit = c(-1,1), space = "Lab", 
-   name = "Pearson\nCorrelation") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
-                                   size = 12, hjust = 1)) +
-  coord_fixed()
+(
+  p <- cormat %>%
+    remove_missing() %>%
+    arrange(x, y) %>%
+    ggplot(aes(x = x, y = y, fill = value)) + 
+    geom_tile() +
+    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+     midpoint = 0, limit = c(-1,1), space = "Lab", 
+     name = "Pearson\nCorrelation") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+    coord_fixed() +
+      labs(x = "", 
+           y = "",
+          title = "Correlation heatmap", 
+          subtitle = "Correlation btw. penguins' traits",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "corplot.png")
+agg_png(pngfile, width = 60, height = 60, units = "cm", res = 100, scaling = 5)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Bar chart
@@ -203,8 +243,21 @@ cormat %>%
     remove_missing() %>%
     ggplot(aes(x = species,
                fill = sex)) +
-    geom_bar()
+    geom_bar() +
+      labs(x = "Species", 
+           y = "Counts",
+          title = "Barchart", 
+          subtitle = "Counts of male & female penguins per species in study",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "barchart.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ```{r}
@@ -213,8 +266,21 @@ cormat %>%
     remove_missing() %>%
     ggplot(aes(x = species,
                fill = sex)) +
-    geom_bar(position = 'dodge')
+    geom_bar(position = 'dodge') +
+      labs(x = "Species", 
+           y = "Counts",
+          title = "Barchart", 
+          subtitle = "Counts of male & female penguins per species in study",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "barchart_dodge.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 - alternative: set y-values
@@ -227,8 +293,21 @@ cormat %>%
     summarise(mean_bmg = mean(body_mass_g)) %>%
     ggplot(aes(x = species, y = mean_bmg,
                fill = sex)) +
-    geom_bar(stat = "identity", position = "dodge")
+    geom_bar(stat = "identity", position = "dodge") +
+      labs(x = "Species", 
+           y = "Mean body mass (in g)",
+          title = "Barchart", 
+          subtitle = "Mean body mass of male & female penguins per species",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "barchart_dodge_bmg.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Boxplot
