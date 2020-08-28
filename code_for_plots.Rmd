@@ -60,7 +60,9 @@ ggplot <- function(...) ggplot2::ggplot(...) +
   theme_bw()
 ```
 
-## Diagram types
+## Main Diagram types
+
+https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 
 ### Point chart
 
@@ -69,14 +71,22 @@ ggplot <- function(...) ggplot2::ggplot(...) +
   p <- penguins %>%
     remove_missing() %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
-              color = species)) +
+              color = species, shape = species)) +
     geom_point() +
-    labs(subtitle="Area Vs Population", 
-       y="Population", 
-       x="Area", 
-       title="Scatterplot", 
-       caption = "Source: midwest")
+    labs(x = "Bill length (mm)", 
+         y = "Flipper length (mm)",
+        title = "Scatterplot", 
+        subtitle = "Penguins bill v. flipper length by species",
+        caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "scatterplot.png")
+agg_png(pngfile, width = 60, height = 36, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 - Jitter with smoothing line
@@ -86,11 +96,24 @@ ggplot <- function(...) ggplot2::ggplot(...) +
   p <- penguins %>%
     remove_missing() %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
-              color = species)) +
-    geom_jitter() +
+              color = species, shape = species)) +
+    geom_jitter(alpha = 0.5) +
     geom_smooth(method = "loess", se = TRUE) +
-    facet_wrap(vars(species), nrow = 3)
+    facet_wrap(vars(species), nrow = 3) +
+    labs(x = "Bill length (mm)", 
+         y = "Flipper length (mm)",
+        title = "Scatterplot with smoothing line", 
+        subtitle = "Penguins bill v. flipper length by species with loess smoothing line",
+        caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "scattersmooth.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ```{r}
@@ -98,11 +121,23 @@ p <- penguins %>%
   remove_missing() %>%
   filter(species == "Adelie") %>%
   ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
-  geom_point() +
-  geom_smooth(method = "loess", se = TRUE)
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess", se = TRUE) +
+    labs(x = "Bill length (mm)", 
+         y = "Flipper length (mm)",
+        title = "Scatterplot with smoothing line", 
+        subtitle = "Penguins bill v. flipper length by species with\nloess smoothing line, histogram & density distribution",
+        caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 
-ggMarginal(p, type = "histogram", fill="transparent")
-ggMarginal(p, type = "boxplot", fill="transparent")
+#(p <- ggMarginal(p, type = "densigram", fill = "transparent"))
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "scatterhist.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+ggMarginal(p, type = "densigram", fill = "transparent")
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Bubble chart
@@ -128,6 +163,34 @@ ggMarginal(p, type = "boxplot", fill="transparent")
     geom_line() +
     facet_wrap(vars(species, sex), nrow = 3)
 )
+```
+
+### Correlation plots / heatmap
+
+```{r}
+mat <- penguins %>%
+  remove_missing() %>%
+  select(bill_depth_mm, bill_length_mm, body_mass_g, flipper_length_mm)
+
+cormat <- round(cor(mat), 2)
+cormat[upper.tri(cormat)] <- NA
+
+cormat <- cormat %>%
+  as_data_frame() %>%
+  mutate(x = colnames(mat)) %>%
+  gather(key = "y", value = "value", bill_depth_mm:flipper_length_mm)
+
+cormat %>%
+  remove_missing() %>%
+  arrange(x, y) %>%
+  ggplot(aes(x = x, y = y, fill = value)) + 
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+   name = "Pearson\nCorrelation") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                   size = 12, hjust = 1)) +
+  coord_fixed()
 ```
 
 ### Bar chart
@@ -180,6 +243,18 @@ ggMarginal(p, type = "boxplot", fill="transparent")
 )
 ```
 
+### Violin plot
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    ggplot(aes(x = species, y = body_mass_g,
+               fill = sex)) +
+    geom_violin()
+)
+```
+
 ### Pie chart
 
 ```{r}
@@ -198,9 +273,39 @@ ggMarginal(p, type = "boxplot", fill="transparent")
 )
 ```
 
+### Alluvial charts
+
+```{r}
+library(ggalluvial)
+```
+
+```{r}
+ggplot(as.data.frame(UCBAdmissions),
+       aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
+  geom_alluvium(aes(fill = Admit), width = 1/12) +
+  geom_stratum(width = 1/12, fill = "black", color = "grey") +
+  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_x_discrete(limits = c("Gender", "Dept"), expand = c(.05, .05)) +
+  ggtitle("UC Berkeley admissions and rejections, by sex and department")
+```
+
 ### Maps
 
 https://shiring.shinyapps.io/wgs_app
+
+### Other
+
+- Dumbbell plots
+- Slope charts
+- Treemaps
+- Dendrograms
+- Area charts
+- Waterfall charts
+- Sankey diagrams
+- Biplots
+- Radar charts
+- Word clouds
+- etc.
 
 ---
 
