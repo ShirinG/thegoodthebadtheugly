@@ -373,7 +373,7 @@ knitr::include_graphics(pngfile)
       labs(x = "Species", 
            y = "Body mass (in g)",
           title = "Violinplot", 
-          subtitle = "Body mass three penguin species per sex",
+          subtitle = "Body mass of three penguin species per sex",
           caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
@@ -398,7 +398,7 @@ knitr::include_graphics(pngfile)
       labs(x = "Species", 
            y = "Body mass (in g)",
           title = "Violinplot with points (dotplot)", 
-          subtitle = "Body mass three penguin species per sex",
+          subtitle = "Body mass of three penguin species per sex",
           caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
@@ -449,13 +449,27 @@ library(ggalluvial)
 ```
 
 ```{r}
-ggplot(as.data.frame(UCBAdmissions),
+(
+  p<- ggplot(as.data.frame(UCBAdmissions),
        aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = "black", color = "grey") +
   geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
   scale_x_discrete(limits = c("Gender", "Dept"), expand = c(.05, .05)) +
-  ggtitle("UC Berkeley admissions and rejections, by sex and department")
+      labs(x = "", 
+           y = "Frequency",
+          title = "Alluvial chart", 
+          subtitle = "UC Berkeley admissions and rejections, by sex and department",
+          caption = "Source: Bickel et al. (1975)\nSex bias in graduate admissions: Data from Berkeley. Science, 187, 398–403.")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "alluvial.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Maps
