@@ -318,8 +318,47 @@ knitr::include_graphics(pngfile)
     remove_missing() %>%
     ggplot(aes(x = species, y = body_mass_g,
                fill = sex)) +
-    geom_boxplot()
+    geom_boxplot() +
+      labs(x = "Species", 
+           y = "Body mass (in g)",
+          title = "Boxplot", 
+          subtitle = "Body mass of three penguin species per sex",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "boxplot.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+- with points
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    ggplot(aes(x = species, y = body_mass_g,
+               fill = sex, color = sex)) +
+    geom_boxplot(alpha = 0.5, notch = TRUE) +
+    geom_jitter(alpha = 0.5, position=position_jitter(0.3)) +
+      labs(x = "Species", 
+           y = "Body mass (in g)",
+          title = "Boxplot with points (dotplot)", 
+          subtitle = "Body mass of three penguin species per sex",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "dotplot.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Violin plot
@@ -330,8 +369,46 @@ knitr::include_graphics(pngfile)
     remove_missing() %>%
     ggplot(aes(x = species, y = body_mass_g,
                fill = sex)) +
-    geom_violin()
+    geom_violin(scale = "area") +
+      labs(x = "Species", 
+           y = "Body mass (in g)",
+          title = "Violinplot", 
+          subtitle = "Body mass three penguin species per sex",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "violinplot.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    ggplot(aes(x = species, y = body_mass_g,
+               fill = sex, color = sex)) +
+    geom_dotplot(method = "dotdensity", alpha = 0.7,
+                 binaxis = 'y', stackdir = 'center',
+                 position = position_dodge(1)) +
+      labs(x = "Species", 
+           y = "Body mass (in g)",
+          title = "Violinplot with points (dotplot)", 
+          subtitle = "Body mass three penguin species per sex",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "violindotplot.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Pie chart
@@ -347,9 +424,22 @@ knitr::include_graphics(pngfile)
     ggplot(aes(x = "", y = percentage,
                fill = sex)) +
     facet_wrap(vars(species), nrow = 1) +
-    geom_bar(stat = "identity") +
-    coord_polar("y", start=0)
+    geom_bar(stat = "identity", alpha = 0.8) +
+    coord_polar("y", start = 0) +
+      labs(x = "", 
+           y = "Percentage",
+          title = "Piechart", 
+          subtitle = "Percentage of male v. female penguins per species in study",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "piechart.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ### Alluvial charts
