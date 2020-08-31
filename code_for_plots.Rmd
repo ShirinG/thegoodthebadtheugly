@@ -549,11 +549,12 @@ knitr::include_graphics(pngfile)
          year = paste0("year_", year)) %>%
     spread(year, mean_bmg) %>%
     ggplot() +
-    geom_segment(aes(x = reorder(species_sex, year_2009), xend = reorder(species_sex, year_2009), 
+    geom_segment(aes(x = reorder(species_sex, -year_2009), xend = reorder(species_sex, -year_2009), 
                    y = 0, yend = year_2009),
                  color = "#999999", size = 1) +
-    geom_point(aes(x = reorder(species_sex, year_2009), y = year_2009),
+    geom_point(aes(x = reorder(species_sex, -year_2009), y = year_2009),
                size = 4, color = "#E69F00") +
+    coord_flip() +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
       labs(x = "Species & sex", 
            y = "Body mass (g)",
