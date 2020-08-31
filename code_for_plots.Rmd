@@ -12,8 +12,12 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align=
 
 ```{r libraries}
 library(tidyverse)
+
 library(ggExtra)
 library(ragg)
+library(ggalluvial)
+library(treemapify)
+
 library(palmerpenguins)
 ```
 
@@ -445,17 +449,13 @@ knitr::include_graphics(pngfile)
 ### Alluvial charts
 
 ```{r}
-library(ggalluvial)
-```
-
-```{r}
 (
-  p<- ggplot(as.data.frame(UCBAdmissions),
-       aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
-  geom_alluvium(aes(fill = Admit), width = 1/12) +
-  geom_stratum(width = 1/12, fill = "black", color = "grey") +
-  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
-  scale_x_discrete(limits = c("Gender", "Dept"), expand = c(.05, .05)) +
+  p <- as.data.frame(UCBAdmissions) %>%
+    ggplot(aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
+    geom_alluvium(aes(fill = Admit), width = 1/12) +
+    geom_stratum(width = 1/12, fill = "black", color = "grey") +
+    geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+    scale_x_discrete(limits = c("Gender", "Dept"), expand = c(.05, .05)) +
       labs(x = "", 
            y = "Frequency",
           title = "Alluvial chart", 
@@ -476,11 +476,42 @@ knitr::include_graphics(pngfile)
 
 https://shiring.shinyapps.io/wgs_app
 
+### Treemaps
+
+```{r}
+(
+  p <- as.data.frame(UCBAdmissions) %>%
+    group_by(Admit, Gender) %>%
+    summarise(sum_freq = sum(Freq)) %>%
+    ggplot(aes(area = sum_freq, fill = sum_freq, label = Gender, 
+               subgroup = Admit)) +
+    geom_treemap() +
+    geom_treemap_subgroup_border() +
+    geom_treemap_subgroup_text(place = "centre", grow = T, alpha = 0.5, colour =
+                             "black", fontface = "italic", min.size = 0) +
+    geom_treemap_text(colour = "white", place = "centre", reflow = T) +
+    scale_fill_gradient2(low = "#999999", high = "#E69F00", mid = "white", midpoint = 1000, space = "Lab", 
+     name = "Sum of\nfrequencies") +
+      labs(x = "", 
+           y = "",
+          title = "Treemap", 
+          subtitle = "UC Berkeley admissions and rejections by sex",
+          caption = "Source: Bickel et al. (1975)\nSex bias in graduate admissions: Data from Berkeley. Science, 187, 398–403.")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "treemap.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
 ### Other
 
 - Dumbbell plots
 - Slope charts
-- Treemaps
 - Dendrograms
 - Area charts
 - Waterfall charts
