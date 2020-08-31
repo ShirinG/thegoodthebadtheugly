@@ -17,6 +17,7 @@ library(ggExtra)
 library(ragg)
 library(ggalluvial)
 library(treemapify)
+library(ggalt)
 
 library(palmerpenguins)
 ```
@@ -508,9 +509,62 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 ```
 
+### Dumbbell plots
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    group_by(year, species, sex) %>%
+    summarise(mean_bmg = mean(body_mass_g)) %>%
+    mutate(species_sex = paste(species, sex, sep = "_"),
+         year = paste0("year_", year)) %>%
+    spread(year, mean_bmg) %>%
+    ggplot(aes(x = year_2007, xend = year_2009, 
+               y = reorder(species_sex, year_2009))) +
+    geom_dumbbell(color = "#999999", 
+                      size_x = 3, 
+                      size_xend = 3,
+                      #Note: there is no US:'color' for UK:'colour' 
+                      # in geom_dumbbel unlike standard geoms in ggplot()
+                      colour_x = "#999999",
+                      colour_xend = "#E69F00") +
+      labs(x = "Body mass (g)", 
+           y = "Species & sex",
+          title = "Dumbbell plot", 
+          subtitle = "Penguin's change in body mass from 2007 to 2009",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+### Lolliplot chart
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    group_by(year, species, sex) %>%
+    summarise(mean_bmg = mean(body_mass_g)) %>%
+    mutate(species_sex = paste(species, sex, sep = "_"),
+         year = paste0("year_", year)) %>%
+    spread(year, mean_bmg) %>%
+    ggplot() +
+    geom_segment(aes(x = reorder(species_sex, year_2009), xend = reorder(species_sex, year_2009), 
+                   y = 0, yend = year_2009),
+                 color = "#999999", size = 1) +
+    geom_point(aes(x = reorder(species_sex, year_2009), y = year_2009),
+               size = 4, color = "#E69F00") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+      labs(x = "Species & sex", 
+           y = "Body mass (g)",
+          title = "Lollipop chart", 
+          subtitle = "Penguin's body mass in 2009",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
 ### Other
 
-- Dumbbell plots
 - Slope charts
 - Dendrograms
 - Area charts
