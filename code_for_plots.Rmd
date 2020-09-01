@@ -537,6 +537,15 @@ knitr::include_graphics(pngfile)
 )
 ```
 
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "dumbbell.png")
+agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
 ### Lolliplot chart
 
 ```{r}
@@ -555,7 +564,6 @@ knitr::include_graphics(pngfile)
     geom_point(aes(x = reorder(species_sex, -year_2009), y = year_2009),
                size = 4, color = "#E69F00") +
     coord_flip() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
       labs(x = "Species & sex", 
            y = "Body mass (g)",
           title = "Lollipop chart", 
@@ -564,13 +572,101 @@ knitr::include_graphics(pngfile)
 )
 ```
 
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "lollipop.png")
+agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+### Dendrograms
+
+```{r}
+library(ggdendro)
+library(dendextend)
+```
+
+```{r}
+penguins_hist <- penguins %>%
+  filter(sex == "male") %>%
+  select(species, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g) %>%
+  group_by(species) %>% 
+  sample_n(10) %>%
+  as.data.frame()
+rownames(penguins_hist) <- paste(penguins_hist$species, seq_len(nrow(penguins_hist)), sep = "_")
+
+penguins_hist <- penguins_hist %>%
+  select(-species) %>%
+  remove_missing()
+```
+
+```{r}
+#hc <- hclust(dist(penguins_hist, method = "euclidean"), method = "ward.D2")
+#ggdendrogram(hc)
+
+# Create a dendrogram and plot it
+dend <- penguins_hist %>%  
+  scale %>% 
+  dist(method = "euclidean") %>%
+  hclust(method = "ward.D2") %>% 
+  as.dendrogram
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "dendrogram.png")
+agg_png(pngfile, width = 60, height = 35, units = "cm", res = 100, scaling = 4)
+dend %>% 
+  set("labels_col", value = cbp1, k=3) %>% 
+  plot(main = "Dendrogram")
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+### Waterfall charts
+
+```{r}
+library(waterfall)
+```
+
+```{r}
+(
+  p<- jaquith %>%
+    arrange(score) %>%
+    add_row(factor = "Total", score = sum(jaquith$score)) %>%
+    mutate(factor = factor(factor, levels = factor),
+                           id = seq_along(score)) %>%
+    mutate(end = cumsum(score),
+           start = c(0, end[-length(end)]),
+           start = c(start[-length(start)], 0),
+           end = c(end[-length(end)], score[length(score)]),
+           gr_col = ifelse(factor == "Total", "Total", "Part")) %>%
+    ggplot(aes(x = factor, fill = gr_col)) + 
+      geom_rect(aes(x = factor,
+                    xmin = id - 0.45, xmax = id + 0.45, 
+                    ymin = end, ymax = start)) +
+      theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1),
+            legend.position = "none") +
+        labs(x = "", 
+             y = "Amount",
+            title = "Waterfall chart", 
+            subtitle = "Sample business-adjusted risk from Security Metrics",
+            caption = "Andrew Jaquith, Security Metrics: Replacing Fear, Uncertainty, and Doubt\n(Boston: Addison-Wesley Professional, 2007), 170-171.")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "waterfall.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+
 ### Other
 
 - Slope charts
-- Dendrograms
 - Area charts
-- Waterfall charts
-- Sankey diagrams
 - Biplots
 - Radar charts
 - Word clouds
