@@ -537,10 +537,69 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-
 ```{r eval=FALSE}
 pngfile <- fs::path("Figs",  "dumbbell.png")
 agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+### Slope charts
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    group_by(year, species, sex) %>%
+    summarise(mean_bmg = mean(body_mass_g)) %>%
+    ggplot(aes(x = year, y = mean_bmg, group = sex,
+               color = sex)) +
+    facet_wrap(vars(species), nrow = 3) +
+    geom_line(alpha = 0.6, size = 2) +
+    geom_point(alpha = 1, size = 3) +
+    scale_x_continuous(breaks=c(2007, 2008, 2009)) +
+      labs(x = "Year", 
+           y = "Body mass (g)",
+           color = "Sex",
+          title = "Slope chart", 
+          subtitle = "Penguin's change in body mass from 2007 to 2009",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "slope.png")
+agg_png(pngfile, width = 50, height = 60, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+### Stacked area charts
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    group_by(year, species, sex) %>%
+    summarise(mean_bmg = mean(body_mass_g)) %>%
+    ggplot(aes(x = year, y = mean_bmg, fill = sex)) +
+    facet_wrap(vars(species), nrow = 3) +
+    geom_area(alpha = 0.6, size=.5, color = "white") +
+    scale_x_continuous(breaks=c(2007, 2008, 2009)) +
+      labs(x = "Year", 
+           y = "Mean body mass (g)",
+           color = "Sex",
+          title = "Stacked area chart", 
+          subtitle = "Penguin's change in body mass from 2007 to 2009",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "area.png")
+agg_png(pngfile, width = 50, height = 60, units = "cm", res = 100, scaling = 4)
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)
@@ -662,12 +721,79 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 ```
 
+### Biplots
+
+```{r}
+library(ggfortify)
+```
+
+```{r}
+penguins_prep <- penguins %>%
+  remove_missing() %>%
+  select(bill_length_mm:body_mass_g)
+
+penguins_pca <- penguins_prep %>%
+  prcomp(scale. = TRUE)
+```
+
+```{r}
+penguins_km <- penguins_prep %>%
+  kmeans(3)
+```
+
+```{r}
+(
+  p <- autoplot(penguins_pca, 
+                data = penguins %>% remove_missing(), 
+                colour = 'species',
+                shape = 'species',
+                loadings = TRUE, 
+                loadings.colour = 'blue',
+                loadings.label = TRUE, 
+                loadings.label.size = 3) +
+      scale_color_manual(values = cbp1) +
+  scale_fill_manual(values = cbp1) +
+  theme_bw() +
+            labs(
+            title = "Biplot PCA", 
+            caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "biplot_pca.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
+
+```{r}
+(
+  p <- autoplot(penguins_km, 
+                data = penguins %>% remove_missing(), 
+                colour = 'species',
+                shape = 'species',
+                frame = TRUE, frame.type = 'norm') +
+      scale_color_manual(values = cbp1) +
+  scale_fill_manual(values = cbp1) +
+  theme_bw() +
+            labs(
+            title = "Biplot k-Means clustering", 
+            caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE}
+pngfile <- fs::path("Figs",  "biplot_km.png")
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
 
 ### Other
 
-- Slope charts
-- Area charts
-- Biplots
 - Radar charts
 - Word clouds
 - etc.
