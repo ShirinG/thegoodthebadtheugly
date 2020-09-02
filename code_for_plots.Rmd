@@ -31,7 +31,7 @@ head(penguins)
 #head(penguins_raw)
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 p <- penguins %>%
   ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
               color = species)) +
@@ -86,7 +86,7 @@ https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "scatterplot.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -113,7 +113,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "scattersmooth.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -137,7 +137,7 @@ p <- penguins %>%
 #(p <- ggMarginal(p, type = "densigram", fill = "transparent"))
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "scatterhist.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 ggMarginal(p, type = "densigram", fill = "transparent")
@@ -162,7 +162,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "bubble.png")
 agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -188,7 +188,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "linechart.png")
 agg_png(pngfile, width = 60, height = 60, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -230,7 +230,7 @@ cormat <- cormat %>%
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "corplot.png")
 agg_png(pngfile, width = 60, height = 60, units = "cm", res = 100, scaling = 5)
 plot(p)
@@ -257,7 +257,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "barchart.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -280,7 +280,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "barchart_dodge.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -295,19 +295,24 @@ knitr::include_graphics(pngfile)
   p <- penguins %>%
     remove_missing() %>%
     group_by(species, sex) %>%
-    summarise(mean_bmg = mean(body_mass_g)) %>%
+    summarise(mean_bmg = mean(body_mass_g),
+              sd_bmg = sd(body_mass_g)) %>%
     ggplot(aes(x = species, y = mean_bmg,
                fill = sex)) +
     geom_bar(stat = "identity", position = "dodge") +
+    geom_errorbar(aes(ymin = mean_bmg - sd_bmg, 
+                      ymax = mean_bmg + sd_bmg), 
+                  width = 0.2,
+                 position = position_dodge(0.9)) +
       labs(x = "Species", 
            y = "Mean body mass (in g)",
           title = "Barchart", 
-          subtitle = "Mean body mass of male & female penguins per species",
+          subtitle = "Mean body mass of male & female penguins per species\nwith standard deviation",
           caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "barchart_dodge_bmg.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -332,7 +337,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "boxplot.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -358,7 +363,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "dotplot.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -383,7 +388,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "violinplot.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -408,7 +413,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "violindotplot.png")
 agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -439,7 +444,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "piechart.png")
 agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -465,7 +470,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "alluvial.png")
 agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -501,7 +506,7 @@ https://shiring.shinyapps.io/wgs_app
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "treemap.png")
 agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -537,7 +542,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "dumbbell.png")
 agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -568,7 +573,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "slope.png")
 agg_png(pngfile, width = 50, height = 60, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -597,7 +602,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "area.png")
 agg_png(pngfile, width = 50, height = 60, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -631,7 +636,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "lollipop.png")
 agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -672,7 +677,7 @@ dend <- penguins_hist %>%
   as.dendrogram
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "dendrogram.png")
 agg_png(pngfile, width = 60, height = 35, units = "cm", res = 100, scaling = 4)
 dend %>% 
@@ -681,6 +686,7 @@ dend %>%
 invisible(dev.off())
 knitr::include_graphics(pngfile)
 ```
+
 ### Waterfall charts
 
 ```{r}
@@ -713,7 +719,7 @@ library(waterfall)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "waterfall.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -760,7 +766,7 @@ penguins_km <- penguins_prep %>%
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "biplot_pca.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -784,7 +790,7 @@ knitr::include_graphics(pngfile)
 )
 ```
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "biplot_km.png")
 agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
@@ -792,11 +798,43 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 ```
 
-### Other
+### Radar charts, aka star chart, aka spider plot
 
-- Radar charts
-- Word clouds
-- etc.
+https://www.data-to-viz.com/caveat/spider.html
+
+```{r}
+library(ggiraphExtra)
+```
+
+```{r}
+(
+  p <- penguins %>%
+    remove_missing() %>%
+    select(-island, -year) %>%
+    ggRadar(aes(x = c(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g), 
+                group = species,
+                colour = sex, facet = sex), 
+            rescale = TRUE, 
+            size = 1, interactive = FALSE, 
+            use.label = TRUE) +
+     scale_color_manual(values = cbp1) +
+  scale_fill_manual(values = cbp1) +
+  theme_bw() +
+     scale_y_discrete(breaks = NULL) + # don't show ticks
+      labs(
+          title = "Radar/spider/star chart", 
+          subtitle = "Body mass of male & female penguins per species",
+          caption = "Source: https://github.com/allisonhorst/palmerpenguins")
+)
+```
+
+```{r eval=FALSE, echo=FALSE}
+pngfile <- fs::path("Figs",  "radar.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 3)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+```
 
 ---
 
