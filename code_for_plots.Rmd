@@ -56,6 +56,34 @@ cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
 # The palette with black:
 cbp2 <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
           "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+library(plotrix)
+sliceValues <- rep(10, 8) # each slice value=10 for proportionate slices
+(
+  p <- pie3D(sliceValues, 
+      explode=0, 
+      theta = 1.2, 
+      col = cbp1, 
+      labels = cbp1, 
+      labelcex = 0.9,
+      shade = 0.6,
+      main = "Colorblind\nfriendly palette")
+)
+```
+
+```{r eval=FALSE, echo=FALSE}
+pngfile <- fs::path("Figs",  "colors.png")
+agg_png(pngfile, width = 40, height = 40, units = "cm", res = 100, scaling = 4)
+pie3D(sliceValues, 
+      explode=0, 
+      theta = 1.2, 
+      col = cbp1, 
+      labels = cbp1, 
+      labelcex = 0.9,
+      shade = 0.6,
+      main = "Colorblind\nfriendly palette")
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 ```
 
 ```{r}
@@ -77,7 +105,7 @@ https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
     remove_missing() %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
               color = species, shape = species)) +
-    geom_point() +
+    geom_point(alpha = 0.7) +
     labs(x = "Bill length (mm)", 
          y = "Flipper length (mm)",
         title = "Scatterplot", 
@@ -157,7 +185,8 @@ knitr::include_graphics(pngfile)
     labs(x = "Bill length (mm)", 
          y = "Flipper length (mm)",
         title = "Bubble plot", 
-        subtitle = "Penguins bill v. flipper length by species; size indicates body mass in grams",
+        size = "body mass (g)",
+        subtitle = "Penguins bill v. flipper length by species;\nsize indicates body mass in grams",
         caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
@@ -190,7 +219,7 @@ knitr::include_graphics(pngfile)
 
 ```{r eval=FALSE, echo=FALSE}
 pngfile <- fs::path("Figs",  "linechart.png")
-agg_png(pngfile, width = 60, height = 60, units = "cm", res = 100, scaling = 4)
+agg_png(pngfile, width = 60, height = 50, units = "cm", res = 100, scaling = 4)
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)

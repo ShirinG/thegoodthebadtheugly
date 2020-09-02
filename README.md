@@ -10,6 +10,8 @@ https://docs.google.com/presentation/d/13quc3zPMryUgHSrbc3qI-7MMsWT7F4t6cucfIaoi
 
 https://r4ds.had.co.nz/data-visualisation.html
 
+https://clauswilke.com/dataviz/
+
 https://education.rstudio.com/blog/2020/02/conf20-dataviz/
 
 https://analythical.com/blog/examples-of-awful-data-visualization
