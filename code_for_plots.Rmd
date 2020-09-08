@@ -1,5 +1,5 @@
 ---
-title: "Code for plots"
+title: "The Good, the Bad and the Ugly: Daten effektiv visualisieren und kommunizieren"
 author: "Dr. Shirin Elsinghorst"
 bibliography: references.bib
 date: "8/26/2020"
@@ -21,8 +21,6 @@ library(ggalt)
 
 library(palmerpenguins)
 ```
-
-[@r4ds]
 
 ## Dataset
 
@@ -231,14 +229,15 @@ knitr::include_graphics(pngfile)
 (
   p <- penguins %>%
     remove_missing() %>%
+    filter(species == "Adelie") %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm,
-               color = species)) +
+               color = sex)) +
     geom_line() +
-    facet_wrap(vars(species, sex), nrow = 3) +
+    geom_point() +
     labs(x = "Bill length (mm)", 
          y = "Flipper length (mm)",
         title = "Line plot", 
-        subtitle = "Penguins bill v. flipper length by species and sex",
+        subtitle = "Adelie penguins bill v. flipper length by sex",
         caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
