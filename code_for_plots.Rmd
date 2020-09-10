@@ -101,20 +101,22 @@ https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 (
   p <- penguins %>%
     remove_missing() %>%
-    ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
+    ggplot(aes(x = bill_length_mm, 
+               y = flipper_length_mm)) +
     geom_point(alpha = 0.7) +
+    facet_grid(sex ~ species) +
     labs(x = "Bill length (mm)", 
          y = "Flipper length (mm)",
          size = "body mass (g)",
         title = "Scatterplot", 
-        subtitle = "Penguins bill v. flipper length by species",
+        subtitle = "Penguins bill v. flipper length by species & sex",
         caption = "Source: https://github.com/allisonhorst/palmerpenguins")
 )
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-pngfile <- fs::path("Figs",  "gg_demo_0.png")
-agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
+pngfile <- fs::path("Figs",  "gg_demo_0d.png")
+agg_png(pngfile, width = 60, height = 40, units = "cm", res = 100, scaling = 4)
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)
@@ -289,7 +291,7 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 ```
 
-### Bar chart
+### Barchart
 
 - per default: counts
 
