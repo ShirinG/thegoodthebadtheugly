@@ -102,10 +102,7 @@ https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
   p <- penguins %>%
     remove_missing() %>%
     ggplot(aes(x = bill_length_mm, y = flipper_length_mm)) +
-    geom_jitter(alpha = 0.5) +
-    facet_wrap(vars(species), ncol = 3) +
-    scale_x_reverse() +
-    scale_y_reverse() +
+    geom_point(alpha = 0.7) +
     labs(x = "Bill length (mm)", 
          y = "Flipper length (mm)",
          size = "body mass (g)",
@@ -116,7 +113,7 @@ https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-pngfile <- fs::path("Figs",  "gg_demo_1d.png")
+pngfile <- fs::path("Figs",  "gg_demo_0.png")
 agg_png(pngfile, width = 60, height = 30, units = "cm", res = 100, scaling = 4)
 plot(p)
 invisible(dev.off())
